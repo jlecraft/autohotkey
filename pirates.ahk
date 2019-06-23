@@ -21,7 +21,7 @@ global mySounds := ["start_cooking01", "start_cooking02", "start_cooking03", "st
 
 global timerSounds := []
 
-Loop, Files, sounds2\*.wav
+Loop, Files, sound\*.wav
 {
 	fp := RegexMatch(A_LoopFileName, "timer(?<Seconds>(\d+))\.wav", subPat)
 
@@ -75,9 +75,15 @@ F2::resetTimer(65, 2)
 F3::resetTimer(95, 3)
 F4::resetTimer(125, 4)
 
-F9::startLap(0, true)
-F10::startLap(1, true)
+XButton1::
+F9::
+	startLap(0, false)
+return
 
++XButton1::startLap(0, true)
+
+
+; F10::startLap(1, true)
 ; ^F9::startLap(0, true)
 ; ^F10::startLap(1, true)
 F12::speakTime(totalTime)
@@ -104,7 +110,7 @@ Timer:
 
 	if (timerCount <= 0)
 	{
-		speakPirate(Rand(5, 10))
+		speakPirate(rand(5, 10))
 		timerCount := MAX_TIMER * 100
 	}
 
@@ -127,7 +133,8 @@ startLap(timerIndex, resetLap = false) {
 
 	if (resetLap)
 	{
-		speakTime(elapsedTimer, "reset at ")
+		; speakTime(elapsedTimer, "restart ")
+		SoundBeep, 200, 250
 		myTimers[timerIndex] := totalTime
 	}
 	else if (myTimers[timerIndex] >= 0)
@@ -156,15 +163,20 @@ resetTimer(duration, pirateIndex := -1) {
 }
 
 speakTime(t, prefixText = "") {
+	if (t <= 0)
+		t := 0
+
 	tMinutes := floor(t / 60)
 	tSeconds := mod(t, 60)
 
 	spokenTime := prefixText
-	secondText := " seconds"
+	; secondText := " seconds"
+	secondText := ""
 	minuteText := " minutes"
 
 	if (tSeconds = 1)
-		secondText := " second"
+		secondText := ""
+		; secondText := " second"
 
 	if (tMinutes = 1)
 		minuteText := " minute"
@@ -185,7 +197,7 @@ speakTime(t, prefixText = "") {
 speakPirate(idx) {
 	if (idx > 0)
 	{
-		soundFile := "sounds2/" . mySounds[idx] . ".wav"
+		soundFile := "sound/" . mySounds[idx] . ".wav"
 		SoundPlay %soundFile%
 	}
 }
@@ -197,7 +209,7 @@ speakPirateTime(t) {
 	{
 		if (t <= k)
 		{
-			fileName = sounds2/%v%
+			fileName = sound/%v%
 			SoundPlay, %fileName%
 			break
 		}
@@ -209,7 +221,7 @@ speakPirateTime(t) {
 		SoundBeep, 400, 150
 }
 
-Rand(a, b) {
+rand(a, b) {
 	Random, r, a, b
 	return r
 }
