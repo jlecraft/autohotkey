@@ -75,12 +75,12 @@ F2::resetTimer(65, 2)
 F3::resetTimer(95, 3)
 F4::resetTimer(125, 4)
 
-XButton1::
-F9::
-	startLap(0, false)
-return
+; XButton1::
+; F9::
+; 	startLap(0, false)
+; return
 
-+XButton1::startLap(0, true)
+; +XButton1::startLap(0, true)
 
 
 ; F10::startLap(1, true)
@@ -96,10 +96,7 @@ return
 ;----------------------------------
 ; Side Mouse Buttons
 ;----------------------------------
-*XButton2::
-	antiIdle := False
-	Click down
-return
+;  g7nhy0
 
 ;----------------------------------
 ; Timer Function (10/sec)
