@@ -20,9 +20,10 @@ ScanMinecraft() {
         newHandle := WinExist("ahk_exe Minecraft.Windows.exe")
     }
     
-    ; If we found Minecraft and didn't have it before, play a beep
+    ; If we found Minecraft and didn't have it before, play sound
     if (newHandle && !mcHandle) {
-        SoundBeep 1000, 200  ; 1000 Hz frequency, 200ms duration
+        soundFile := A_ScriptDir . "\minecraft_found.mp3"
+        SoundPlay soundFile
     }
     
     mcHandle := newHandle
@@ -74,6 +75,22 @@ XButton1:: {
     Sleep 100
     ControlSend "{d down}", , "ahk_id " handle
     Sleep 100
+    ControlClick , "ahk_id " handle, , "L", 1, "D"
+}
+
+; XButton2 function - holds down left click
+XButton2:: {
+    handle := GetMinecraftHandle()
+    if (!handle) {
+        return
+    }
+    
+    ; Only work if Minecraft is active
+    if (!WinActive("ahk_id " handle)) {
+        return
+    }
+    
+    ; Hold down left click
     ControlClick , "ahk_id " handle, , "L", 1, "D"
 }
 
