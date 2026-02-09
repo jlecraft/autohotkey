@@ -29,8 +29,9 @@ CreateTimerGui() {
     ; Add text control for the timer display
     timerGui.Add("Text", "w300 h80 Center vTimerText", "00")
     
-    ; Position in top-right corner (adjust as needed)
-    timerGui.Show("x" (A_ScreenWidth - 350) " y50 w300 h100 NoActivate Hide")
+    ; Position in top-left corner of second monitor
+    MonitorGet(1, &Left, &Top, &Right, &Bottom)
+    timerGui.Show("x" (Left + 50) " y50 w300 h100 NoActivate Hide")
     
     WinSetTransColor("0x000000 200", timerGui)
 }
@@ -73,7 +74,7 @@ ToggleTimerGui() {
 StartCountdown() {
     global countdownSeconds, timerRunning, countingUp
     
-    countdownSeconds := 90
+    countdownSeconds := 120
     timerRunning := true
     countingUp := false  ; Reset counting up state
     UpdateTimerDisplay()
@@ -160,9 +161,8 @@ GetMinecraftHandle() {
     return mcHandle
 }
 
-
-; XButton2 function - holds down left click AND starts countdown timer
-XButton2:: {
+; Centralized function for right-click action and timer start
+PerformMinecraftAction() {
     handle := GetMinecraftHandle()
     if (!handle) {
         return
@@ -177,20 +177,19 @@ XButton2:: {
     StartCountdown()
 }
 
-; Joy1 function - same functionality as XButton2
-Joy1:: {
-    handle := GetMinecraftHandle()
-    if (!handle) {
-        return
-    }
-    
-    ; Send command to Minecraft even if it's in the background
-    ControlClick , "ahk_id " handle, , "R", 1, "D"
-    Sleep 400
-    ControlClick , "ahk_id " handle, , "R", 1, "U"
+; XButton2 hotkey - calls centralized function
+XButton2:: {
+    PerformMinecraftAction()
+}
 
-    ; Start the countdown timer
-    StartCountdown()
+; Joy1 hotkey - calls centralized function
+Joy1:: {
+    PerformMinecraftAction()
+}
+
+; F4 hotkey - calls centralized function
+F4:: {
+    PerformMinecraftAction()
 }
 
 ; F1 to toggle timer GUI visibility
@@ -200,5 +199,5 @@ F1:: {
 
 ; F8 to exit script safely
 F8:: {
-    ExitApp
+    ExitApp()
 }
