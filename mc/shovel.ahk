@@ -22,7 +22,7 @@ ScanMinecraft() {
     
     ; If we found Minecraft and didn't have it before, play sound
     if (newHandle && !mcHandle) {
-        soundFile := A_ScriptDir . "\minecraft_found.mp3"
+        soundFile := A_ScriptDir . "\smooth.wav"
         SoundPlay soundFile
     }
     
@@ -69,13 +69,18 @@ XButton1:: {
     if (!WinActive("ahk_id " handle)) {
         return
     }
-    
+
+    ControlSend "{F2}", , "ahk_id " handle    
+    Sleep 100
+
     ; Send keys directly to Minecraft window with 100ms delays
     ControlSend "{w down}", , "ahk_id " handle
     Sleep 100
     ControlSend "{d down}", , "ahk_id " handle
     Sleep 100
     ControlClick , "ahk_id " handle, , "L", 1, "D"
+
+    SetTimer SnowTimer, -115000
 }
 
 ; XButton2 function - holds down left click
@@ -108,4 +113,11 @@ XButton2:: {
 F8:: {
     ReleaseAllKeys()
     ExitApp
+}
+
+SnowTimer() {
+    soundFile := A_ScriptDir . "\smooth.wav"
+    if FileExist(soundFile) {
+        SoundPlay soundFile
+    }    
 }
