@@ -2,124 +2,25 @@
 #Requires AutoHotkey v2.0
 #SingleInstance Force
 
+; Include the timer library
+#Include timer_lib.ahk
+
 ; Global variable to store Minecraft window handle
 global mcHandle := 0
 
-; Countdown timer variables
-global countdownSeconds := 0
-global timerRunning := false
-global countingUp := false  ; New variable to track if we're counting up
-global timerGui := ""
-global guiVisible := false
+; Initialize the timer on monitor 1, position (50, 50)
+Timer_Initialize(1, 50, 50)
 
-; Create the GUI
-CreateTimerGui()
+; Set up the timer expiration callback to play coin.wav
+Timer_SetOnExpire(OnTimerExpire)
 
 ; Continuously scan for Minecraft window
 SetTimer(ScanMinecraft, 2000)
 
-; Function to create the countdown timer GUI
-CreateTimerGui() {
-    global timerGui
-    
-    timerGui := Gui("+AlwaysOnTop -Caption +ToolWindow", "Timer")
-    timerGui.BackColor := "0x000000"
-    timerGui.SetFont("s48 cFF8800 Bold", "Arial")  ; Orange color for inactive state
-    
-    ; Add text control for the timer display
-    timerGui.Add("Text", "w300 h80 Center vTimerText", "00")
-    
-    ; Position in top-left corner of second monitor
-    MonitorGet(1, &Left, &Top, &Right, &Bottom)
-    timerGui.Show("x" (Left + 50) " y50 w300 h100 NoActivate Hide")
-    
-    WinSetTransColor("0x000000 200", timerGui)
-}
-
-; Function to update the GUI display
-UpdateTimerDisplay() {
-    global timerGui, countdownSeconds, timerRunning, countingUp
-    
-    if (timerGui) {
-        if (countingUp) {
-            ; Counting up mode - orange text
-            timerGui["TimerText"].Opt("cFF8800")
-            timerGui["TimerText"].Value := countdownSeconds
-        } else if (timerRunning && countdownSeconds > 0) {
-            ; Active countdown - white text
-            timerGui["TimerText"].Opt("cWhite")
-            timerGui["TimerText"].Value := countdownSeconds
-        } else {
-            ; Inactive timer - orange "00"
-            timerGui["TimerText"].Opt("cFF8800")
-            timerGui["TimerText"].Value := "00"
-        }
-    }
-}
-
-; Function to show/hide the GUI
-ToggleTimerGui() {
-    global timerGui, guiVisible
-    
-    if (guiVisible) {
-        timerGui.Hide()
-        guiVisible := false
-    } else {
-        timerGui.Show("NoActivate")
-        guiVisible := true
-    }
-}
-
-; Function to start the countdown timer
-StartCountdown() {
-    global countdownSeconds, timerRunning, countingUp
-    
-    countdownSeconds := 120
-    timerRunning := true
-    countingUp := false  ; Reset counting up state
-    UpdateTimerDisplay()
-    
-    ; Start the countdown timer (updates every second)
-    SetTimer(CountdownTick, 1000)
-}
-
-; Function called every second to update the countdown
-CountdownTick() {
-    global countdownSeconds, timerRunning, countingUp
-    
-    if (!timerRunning) {
-        SetTimer(CountdownTick, 0)  ; Stop the timer
-        return
-    }
-    
-    if (countingUp) {
-        ; Count up mode - increment
-        countdownSeconds += 1
-        UpdateTimerDisplay()
-    } else {
-        ; Count down mode - decrement
-        countdownSeconds -= 1
-        
-        ; Check if countdown has reached zero
-        if (countdownSeconds <= 0) {
-            countdownSeconds := 0
-            countingUp := true  ; Switch to counting up mode
-            UpdateTimerDisplay()  ; Show orange "00"
-            PlayTimerSound()
-            ; Don't stop the timer - keep it running to count up
-        } else {
-            UpdateTimerDisplay()
-        }
-    }
-}
-
-; Function to play sound when timer expires
-PlayTimerSound() {
-    ; Play coin.wav from the script directory
+; Callback function when timer expires
+OnTimerExpire() {
     soundFile := A_ScriptDir . "\coin.wav"
-    if FileExist(soundFile) {
-        SoundPlay soundFile
-    }
+    Timer_PlaySound(soundFile)
 }
 
 ; Function to scan for Minecraft window
@@ -173,8 +74,8 @@ PerformMinecraftAction() {
     Sleep 400
     ControlClick , "ahk_id " handle, , "R", 1, "U"
 
-    ; Start the countdown timer
-    StartCountdown()
+    ; Start the countdown timer for 120 seconds
+    Timer_Start(120)
 }
 
 ; XButton2 hotkey - calls centralized function
@@ -194,7 +95,7 @@ F4:: {
 
 ; F1 to toggle timer GUI visibility
 F1:: {
-    ToggleTimerGui()
+    Timer_ToggleVisibility()
 }
 
 ; F8 to exit script safely
