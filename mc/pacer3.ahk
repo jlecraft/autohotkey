@@ -6,10 +6,11 @@
 #Include timer_lib.ahk
 
 ; Global variables
-global REVERSE_TIMER := 130
+global REVERSE_TIMER := 135
 global mcHandle := 0
 global autoWalkActive := false
 global currentDirection := ""  ; "forward" or "backward"
+global walkOnly := false
 
 ; Initialize the timer on monitor 1, position (50, 50)
 Timer_Initialize(1, 50, 50)
@@ -22,35 +23,49 @@ SetTimer(ScanMinecraft, 2000)
 
 ; Callback function when timer expires
 OnTimerExpire() {
-    global autoWalkActive, currentDirection, REVERSE_TIMER
-    
-    if (!autoWalkActive) {
-        return
-    }
+    global autoWalkActive, currentDirection, REVERSE_TIMER, walkOnly
     
     handle := GetMinecraftHandle()
     if (!handle) {
         StopAutoWalk()
         return
     }
-    
+
+    if (walkOnly) {
+        ControlSend("{w up}", ,"ahk_id " handle)
+        walkOnly := False
+        return
+    }
+
+    if (!autoWalkActive) {
+        return
+    }
+        
     ; Switch directions
     if (currentDirection = "forward") {
+        ControlSend("{F2}", , "ahk_id " handle)
+        Sleep(100)
+
         ; Stop forward, start backward
         ControlSend("{w up}", ,"ahk_id " handle)
         Sleep(50)
         ControlSend("{s down}", ,"ahk_id " handle)
         currentDirection := "backward"
+        Timer_Start(REVERSE_TIMER * 1.25)
     } else if (currentDirection = "backward") {
+        ControlSend("{F2}", , "ahk_id " handle)
+        Sleep(100)
+
         ; Stop backward, start forward
         ControlSend("{s up}", ,"ahk_id " handle)
         Sleep(50)
         ControlSend("{w down}", ,"ahk_id " handle)
         currentDirection := "forward"
+        Timer_Start(REVERSE_TIMER)
     }
     
     ; Start next timer cycle
-    Timer_Start(REVERSE_TIMER)
+
 }
 
 ; Function to scan for Minecraft window
@@ -129,7 +144,7 @@ StopAutoWalk() {
 }
 
 ; F2 - Toggle auto-walk on/off
-F2:: {
+F1:: {
     global autoWalkActive
     
     if (autoWalkActive) {
@@ -144,8 +159,21 @@ F2:: {
 }
 
 ; F1 to toggle timer GUI visibility
-F1:: {
+F3:: {
     Timer_ToggleVisibility()
+}
+
+
+F4:: {
+    global mcHandle, walkOnly
+
+    if mcHandle {
+        walkOnly := True
+        ControlSend("{w down}", ,"ahk_id " mcHandle)
+        Timer_Start(130)
+    } else {
+        SoundBeep(100, 100)
+    }
 }
 
 ; F8 to exit script safely

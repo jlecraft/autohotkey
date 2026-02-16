@@ -18,7 +18,6 @@ F1::
         Send "{Escape}"
         Sleep 200
     }
-    
 }
 
 F8::ExitApp
