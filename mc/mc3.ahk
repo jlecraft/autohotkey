@@ -401,11 +401,11 @@ XButtonLogic() {
         Sleep 50
         ControlClick(,"ahk_id " storedHwnd, , "Right", 1, "NA U")
 
-        ControlSend("{d down}", ,"ahk_id " storedHwnd)
-        Sleep(150)
-        ControlSend("{d up}", ,"ahk_id " storedHwnd)
+        ; ControlSend("{d down}", ,"ahk_id " storedHwnd)
+        ; Sleep(25)
+        ; ControlSend("{d up}", ,"ahk_id " storedHwnd)
 
-        Sleep Random(100, 150)
+        Sleep Random(750, 1000)
 
         ; ControlClick(Control-or-Pos, WinTitle, WinText, WhichButton, ClickCount, Options, ExcludeTitle, Excld)
         ControlClick(, "ahk_id " storedHwnd, , "Right", 1, "NA D")
@@ -497,17 +497,18 @@ QuickTooltip(txt) {
 
 
 Joy1:: {
-    ; XButtonLogic()
-    ControlClick(, "ahk_id " storedHwnd, , "Right", 1, "NA D")
-    Sleep 50
-    ControlClick(,"ahk_id " storedHwnd, , "Right", 1, "NA U")    
-
-    Sleep 200
-
-    ControlClick(, "ahk_id " storedHwnd, , "Right", 1, "NA D")
-    Sleep 50
-    ControlClick(,"ahk_id " storedHwnd, , "Right", 1, "NA U")    
+    XButtonLogic()
 }
+;     ControlClick(, "ahk_id " storedHwnd, , "Right", 1, "NA D")
+;     Sleep 50
+;     ControlClick(,"ahk_id " storedHwnd, , "Right", 1, "NA U")    
+
+;     Sleep 200
+
+;     ControlClick(, "ahk_id " storedHwnd, , "Right", 1, "NA D")
+;     Sleep 50
+;     ControlClick(,"ahk_id " storedHwnd, , "Right", 1, "NA U")    
+; }
 
 ; Joy2:: {
 ;     SoundBeep(150, 150)
